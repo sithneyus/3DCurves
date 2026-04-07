@@ -1,0 +1,18 @@
+# Data
+data/raw/
+data/processed/
+
+# Results
+results/
+models/
+
+# Notebook outputs
+*.ipynb_checkpoints
+
+# Python
+__pycache__/
+*.pyc
+
+# Environment
+.env
+.venv
