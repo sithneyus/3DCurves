@@ -47,7 +47,7 @@ import json
 from IPython.display import Video
 
 
-# %% [markdown]
+# %% [markdown] jp-MarkdownHeadingCollapsed=true
 # # My functions
 
 # %% slideshow={"slide_type": "skip"}
@@ -1247,7 +1247,7 @@ def features(curva):
     # return speed,accel,J,per,ent,k
 
 
-# %% [markdown]
+# %% [markdown] jp-MarkdownHeadingCollapsed=true
 # # Main
 
 # %% [markdown]
@@ -1257,7 +1257,7 @@ def features(curva):
 # Se leen las coordenadas tridimensionales de las células en Z e n o d o
 # homedir=os.path.expanduser('~')
 homedir=os.path.expanduser('~')
-root_dir = homedir+"/lastestxZenodo/traces_micrometers/"
+root_dir = homedir+"/lastestxZenodo/correccion-2026/traces_micrometers/"
 #root_dir = "/home/sidney/lastestxZenodo/trace_microns_smooth/"
 curvasFlagelaresZenodo=[]
 # Iterate over all folders and files
@@ -1293,146 +1293,8 @@ for foldername, subfolders, filenames in os.walk(root_dir):
 flagellar_data = [item[1] for item in curvasFlagelaresZenodo]   # list of list of DataFrames, without the names
 
 # %%
-len(curvasFlagelaresZenodo)
 
-# %%
-
-# %% [markdown]
-# # Velocity
-
-# %% [markdown]
-# The initial goal is go get the trajectory of the head.
-
-# %%
-curvasFlagelaresZenodo[116][1][0].head()
-
-# %%
-nt=len(curvasFlagelaresZenodo[116][1])
-traj=[]
-for i in range(nt):
-    x=curvasFlagelaresZenodo[116][1][i].x.iloc[0]
-    y=curvasFlagelaresZenodo[116][1][i].y.iloc[0]
-    z=curvasFlagelaresZenodo[116][1][i].z.iloc[0]
-    traj.append([x,y,z])
-
-
-# %%
-dftraj=pd.DataFrame(traj, columns=['x','y','z'])
-
-# %%
-dftraj.head()
-
-# %%
-celula1=116
-tiempo1=96
-fig=go.Figure()
-fig.update_layout(
-    autosize=False,
-    width=1250,
-    height=1000,
-    scene_aspectmode='cube'
-    # margin=dict(l=10, r=10, t=10, b=10, pad=10)
-)
-fig.add_trace(go.Scatter3d(x=dftraj.x, y=dftraj.y, 
-                           z=dftraj.z, mode='lines+markers',marker=dict(color='red', size=5), 
-                           name=' Trajectory '))
-fig.add_trace(
-    go.Scatter3d(x=[dftraj.x.iloc[0]],
-                 y=[dftraj.y.iloc[0]],
-                 z=[dftraj.z.iloc[0]],
-                 mode='markers',marker=dict(color='black'))
-)
-ejeshomogeneos=homogenizarRangos(dftraj,dftraj)
-fig.update_layout(
-    scene=dict(
-        xaxis=dict(range=[ejeshomogeneos[0], ejeshomogeneos[1]], title='X'),  # Set X-axis range and title
-        yaxis=dict(range=[ejeshomogeneos[2], ejeshomogeneos[3]], title='Y'),   # Set Y-axis range and title
-        zaxis=dict(range=[ejeshomogeneos[4], ejeshomogeneos[5]], title='Z'),   # Set Z-axis range and title
-    ),
-    title='Head trajectory',#curvasFlagelaresZenodo[celula1][0],
-)
-fig.show()
-
-# %%
-xvecTraj=dftraj.x.iloc[-1]-dftraj.x.iloc[0]
-yvecTraj=dftraj.y.iloc[-1]-dftraj.y.iloc[0]
-zvecTraj=dftraj.z.iloc[-1]-dftraj.z.iloc[0]
-vecTraj=np.array([xvecTraj,yvecTraj,zvecTraj])
-
-# %%
-xvec=dftraj.x.iloc[1]-dftraj.x.iloc[0]
-yvec=dftraj.y.iloc[1]-dftraj.y.iloc[0]
-zvec=dftraj.z.iloc[1]-dftraj.z.iloc[0]
-vec=np.array([xvec,yvec,zvec])
-
-# %%
-numerator=np.dot(vecTraj,vec)
-denominator=np.linalg.norm(vecTraj)*np.linalg.norm(vec)
-ang=np.arccos(numerator/denominator)
-
-# %%
-ang
-
-# %%
-
-# %%
-
-# %%
-
-# %%
-nt=len(curvasFlagelaresZenodo[20][1])
-traj=[]
-for i in range(nt):
-    x=curvasFlagelaresZenodo[20][1][i].x.iloc[0]
-    y=curvasFlagelaresZenodo[20][1][i].y.iloc[0]
-    z=curvasFlagelaresZenodo[20][1][i].z.iloc[0]
-    traj.append([x,y,z])
-
-# %%
-dftrajNoCap_210702_exp21=pd.DataFrame(traj, columns=['x','y','z'])
-
-# %%
-celula1=116
-tiempo1=96
-fig=go.Figure()
-fig.update_layout(
-    autosize=False,
-    width=1250,
-    height=1000,
-    scene_aspectmode='cube'
-    # margin=dict(l=10, r=10, t=10, b=10, pad=10)
-)
-fig.add_trace(go.Scatter3d(x=dftrajNoCap_210702_exp21.x, y=dftrajNoCap_210702_exp21.y, 
-                           z=dftrajNoCap_210702_exp21.z, mode='lines+markers',marker=dict(color='red', size=5), 
-                           name=' Trajectory '))
-fig.add_trace(
-    go.Scatter3d(x=[dftrajNoCap_210702_exp21.x.iloc[0]],
-                 y=[dftrajNoCap_210702_exp21.y.iloc[0]],
-                 z=[dftrajNoCap_210702_exp21.z.iloc[0]],
-                 mode='markers',marker=dict(color='black'))
-)
-ejeshomogeneos=homogenizarRangos(dftrajNoCap_210702_exp21,dftrajNoCap_210702_exp21)
-fig.update_layout(
-    scene=dict(
-        xaxis=dict(range=[ejeshomogeneos[0], ejeshomogeneos[1]], title='X'),  # Set X-axis range and title
-        yaxis=dict(range=[ejeshomogeneos[2], ejeshomogeneos[3]], title='Y'),   # Set Y-axis range and title
-        zaxis=dict(range=[ejeshomogeneos[4], ejeshomogeneos[5]], title='Z'),   # Set Z-axis range and title
-    ),
-    title='Head trajectory NoCap',#curvasFlagelaresZenodo[celula1][0],
-)
-fig.show()
-
-# %%
-dist3D(dftrajNoCap_210702_exp21.x.iloc[0],dftrajNoCap_210702_exp21.y.iloc[0],dftrajNoCap_210702_exp21.z.iloc[0],
-       dftrajNoCap_210702_exp21.x.iloc[-1],dftrajNoCap_210702_exp21.y.iloc[-1],dftrajNoCap_210702_exp21.z.iloc[-1])
-
-# %%
-dist3D(dftraj.x.iloc[0],dftraj.y.iloc[0],dftraj.z.iloc[0],
-       dftraj.x.iloc[-1],dftraj.y.iloc[-1],dftraj.z.iloc[-1])
-
-# %%
-
-# %% [markdown]
+# %% [markdown] jp-MarkdownHeadingCollapsed=true
 # # Dimensión fractal flagelar 
 #
 # <!--
@@ -1487,11 +1349,8 @@ with open('celsZenodoDimFrac.json', 'w') as f:
     '''
 
 # %%
-os.getcwd()
-
-# %%
 # the fractal dimensions previously computed are readed from a json file
-with open(homedir+"/Research/3DCurves/data/celsZenodoDimFrac.json") as f:
+with open("celsZenodoDimFrac.json") as f:
     lst = json.load(f)
 
 dfCelsZenodoDimFrac=pd.DataFrame(lst,columns=['cel','dimFracDistro'])
@@ -1727,7 +1586,7 @@ fig.show()
 
 # %%
 
-# %% [markdown]
+# %% [markdown] jp-MarkdownHeadingCollapsed=true
 # ## Sperm-1-NoCap_210702_Exp4_cell-1
 
 # %%
@@ -1881,7 +1740,7 @@ fig.show()
 
 # %%
 
-# %% [markdown]
+# %% [markdown] jp-MarkdownHeadingCollapsed=true
 # ## Sperm-13-Cap_170601_Exp10-T0
 
 # %%
@@ -2026,7 +1885,7 @@ fig.show()
 
 # %%
 
-# %% [markdown]
+# %% [markdown] jp-MarkdownHeadingCollapsed=true
 # ## Sperm-1-Cap_171108_Exp9
 
 # %%
@@ -2405,7 +2264,7 @@ print(tccCf80_51.mean())
 
 # %%
 
-# %% [markdown]
+# %% [markdown] jp-MarkdownHeadingCollapsed=true
 # ## Sperm-3-Cap_181026_Exp13 Promedio
 
 # %%
@@ -2573,7 +2432,7 @@ fig.show()
 
 # %%
 
-# %% [markdown]
+# %% [markdown] jp-MarkdownHeadingCollapsed=true
 # # Median
 
 # %%
@@ -2603,7 +2462,7 @@ fig.show()
 
 # %%
 
-# %% [markdown]
+# %% [markdown] jp-MarkdownHeadingCollapsed=true
 # # Maximmum flagellar form
 #
 # The maximmum of the Katz Fractal Dimension corresponds to the flagellar curve with the more "irregular" form, thus this descriptor is briefly explored.
@@ -2646,7 +2505,7 @@ celsDFmaxis.head()
 
 # %%
 
-# %% [markdown]
+# %% [markdown] jp-MarkdownHeadingCollapsed=true
 # # Weighted max form
 
 # %%
@@ -2782,60 +2641,6 @@ print(dfCelsZenodoDimFrac.cel.iloc[indiceDistro],curvasFlagelaresZenodo[indiceFl
 dfCelsZenodoDimFrac.cel.iloc[indiceDistro], curvasFlagelaresZenodo[indiceFlagelar][0]
 
 # %%
-celula1=indiceFlagelar
-celula2=indiceFlagelar
-tiempo1=minidx
-tiempo2=muidx
-tiempo3=maxidx
-fig=go.Figure()
-fig.update_layout(
-    autosize=False,
-    width=1250,
-    height=1000,
-    scene_aspectmode='cube'
-    # margin=dict(l=10, r=10, t=10, b=10, pad=10)
-)
-fig.add_trace(go.Scatter3d(x=curvasFlagelaresZenodo[celula1][1][tiempo1].x, y=curvasFlagelaresZenodo[celula1][1][tiempo1].y, 
-                           z=curvasFlagelaresZenodo[celula1][1][tiempo1].z, mode='lines',marker=dict(color='red', size=5), 
-                           name='Min, Tiempo = '+str(tiempo1)))
-fig.add_trace(
-    go.Scatter3d(x=[curvasFlagelaresZenodo[celula1][1][tiempo1].x.iloc[0]],
-                 y=[curvasFlagelaresZenodo[celula1][1][tiempo1].y.iloc[0]],
-                 z=[curvasFlagelaresZenodo[celula1][1][tiempo1].z.iloc[0]],
-                 mode='markers',marker=dict(color='red'))
-)
-fig.add_trace(go.Scatter3d(x=curvasFlagelaresZenodo[celula2][1][tiempo2].x, y=curvasFlagelaresZenodo[celula2][1][tiempo2].y, 
-                           z=curvasFlagelaresZenodo[celula2][1][tiempo2].z, mode='lines',marker=dict(color='blue', size=5), 
-                           name='Mu, Tiempo = '+str(tiempo2)))
-fig.add_trace(
-    go.Scatter3d(x=[curvasFlagelaresZenodo[celula2][1][tiempo2].x.iloc[0]],
-                 y=[curvasFlagelaresZenodo[celula2][1][tiempo2].y.iloc[0]],
-                 z=[curvasFlagelaresZenodo[celula2][1][tiempo2].z.iloc[0]],
-                 mode='markers',marker=dict(color='blue'))
-)
-
-fig.add_trace(go.Scatter3d(x=curvasFlagelaresZenodo[celula2][1][tiempo3].x, y=curvasFlagelaresZenodo[celula2][1][tiempo3].y, 
-                           z=curvasFlagelaresZenodo[celula2][1][tiempo3].z, mode='lines',marker=dict(color='green', size=5), 
-                           name='Max, Tiempo = '+str(tiempo3)))
-fig.add_trace(
-    go.Scatter3d(x=[curvasFlagelaresZenodo[celula2][1][tiempo3].x.iloc[0]],
-                 y=[curvasFlagelaresZenodo[celula2][1][tiempo3].y.iloc[0]],
-                 z=[curvasFlagelaresZenodo[celula2][1][tiempo3].z.iloc[0]],
-                 mode='markers',marker=dict(color='green'))
-)
-
-ejeshomogeneos=homogenizarRangos(curvasFlagelaresZenodo[celula1][1][tiempo1],curvasFlagelaresZenodo[celula2][1][tiempo2])
-fig.update_layout(
-    scene=dict(
-        xaxis=dict(range=[ejeshomogeneos[0], ejeshomogeneos[1]], title='X'),  # Set X-axis range and title
-        yaxis=dict(range=[ejeshomogeneos[2], ejeshomogeneos[3]], title='Y'),   # Set Y-axis range and title
-        zaxis=dict(range=[ejeshomogeneos[4], ejeshomogeneos[5]], title='Z'),   # Set Z-axis range and title
-    ),
-    title='Curvas para '+curvasFlagelaresZenodo[celula2][0]+' con DF mínima, media y máxima',
-)
-fig.show()
-
-# %%
 feature=dfCelsZenodoDimFrac.dimFracDistro.iloc[indiceDistro]
 cell_data=flagellar_data[indiceFlagelar]
 dt = 1/90
@@ -2855,7 +2660,7 @@ fig.show()
 
 # %%
 
-# %% [markdown]
+# %% [markdown] jp-MarkdownHeadingCollapsed=true
 # ## Sperm-12-NoCap_210730_Exp18
 
 # %%
@@ -2961,9 +2766,7 @@ fig = animate_flagella_with_feature_vertical(
 
 fig.show()
 
-# %%
-
-# %% [markdown]
+# %% [markdown] jp-MarkdownHeadingCollapsed=true
 # ## Sperm-1-NoCap_210702_Exp4_cell-1
 
 # %%
@@ -3124,7 +2927,7 @@ tiempo3=maxidx
 fig=go.Figure()
 fig.update_layout(
     autosize=False,
-    width=1250,
+    width=1500,
     height=1000,
     scene_aspectmode='cube'
     # margin=dict(l=10, r=10, t=10, b=10, pad=10)
@@ -3196,7 +2999,7 @@ tiempo3=42
 fig=go.Figure()
 fig.update_layout(
     autosize=False,
-    width=1250,
+    width=1500,
     height=1000,
     scene_aspectmode='cube'
     # margin=dict(l=10, r=10, t=10, b=10, pad=10)
@@ -3243,11 +3046,7 @@ fig.show()
 
 # %%
 
-# %% [markdown]
-# # Notes
-
-# %% [markdown]
-# * Aparently, the flagellar curves corresponding to some maxima of not-induced-to-capacitate cells are quasi-planar curves, i. e., their torsion should be small.
+# %%
 
 # %%
 
