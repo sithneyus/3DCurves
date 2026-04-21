@@ -1307,49 +1307,6 @@ len(curvasFlagelaresZenodo)
 curvasFlagelaresZenodo[116][1][0].head()
 
 # %%
-nt=len(curvasFlagelaresZenodo[20][1])
-traj=[]
-for i in range(nt):
-    x=curvasFlagelaresZenodo[20][1][i].x.iloc[0]
-    y=curvasFlagelaresZenodo[20][1][i].y.iloc[0]
-    z=curvasFlagelaresZenodo[20][1][i].z.iloc[0]
-    traj.append([x,y,z])
-dftrajNoCap=pd.DataFrame(traj, columns=['x','y','z'])
-
-# %%
-# celula1=116
-# tiempo1=96
-fig=go.Figure()
-fig.update_layout(
-    autosize=False,
-    width=1250,
-    height=1000,
-    scene_aspectmode='cube'
-    # margin=dict(l=10, r=10, t=10, b=10, pad=10)
-)
-fig.add_trace(go.Scatter3d(x=dftrajNoCap.x, y=dftrajNoCap.y, 
-                           z=dftrajNoCap.z, mode='lines+markers',marker=dict(color='red', size=5), 
-                           name=' Trajectory '))
-fig.add_trace(
-    go.Scatter3d(x=[dftrajNoCap.x.iloc[0]],
-                 y=[dftrajNoCap.y.iloc[0]],
-                 z=[dftrajNoCap.z.iloc[0]],
-                 mode='markers',marker=dict(color='black'))
-)
-ejeshomogeneos=homogenizarRangos(dftrajNoCap,dftrajNoCap)
-fig.update_layout(
-    scene=dict(
-        xaxis=dict(range=[ejeshomogeneos[0], ejeshomogeneos[1]], title='X'),  # Set X-axis range and title
-        yaxis=dict(range=[ejeshomogeneos[2], ejeshomogeneos[3]], title='Y'),   # Set Y-axis range and title
-        zaxis=dict(range=[ejeshomogeneos[4], ejeshomogeneos[5]], title='Z'),   # Set Z-axis range and title
-    ),
-    title='Head trajectory NoCap',#curvasFlagelaresZenodo[celula1][0],
-)
-fig.show()
-
-# %%
-
-# %%
 nt=len(curvasFlagelaresZenodo[116][1])
 traj=[]
 for i in range(nt):
@@ -1409,12 +1366,149 @@ zvec=dftraj.z.iloc[1]-dftraj.z.iloc[0]
 vec=np.array([xvec,yvec,zvec])
 
 # %%
-dist3D(dftrajNoCap.x.iloc[0],dftrajNoCap.y.iloc[0],dftrajNoCap.z.iloc[0],
-       dftrajNoCap.x.iloc[-1],dftrajNoCap.y.iloc[-1],dftrajNoCap.z.iloc[-1])
+numerator=np.dot(vecTraj,vec)
+denominator=np.linalg.norm(vecTraj)*np.linalg.norm(vec)
+ang=np.arccos(numerator/denominator)
+
+# %%
+ang
+
+
+# %%
+def trajLine(alpha,beta,gamma,x0,y0,z0,t):
+    return np.array([x0+alpha*t,y0+beta*t,z0+gamma*t])
+
+
+# %%
+xvecTraj=dftraj.x.iloc[-1]-dftraj.x.iloc[0]
+yvecTraj=dftraj.y.iloc[-1]-dftraj.y.iloc[0]
+zvecTraj=dftraj.z.iloc[-1]-dftraj.z.iloc[0]
+vecTraj=np.array([xvecTraj,yvecTraj,zvecTraj])
+npts=dftraj.shape[0]
+angDistro=[]
+for i in range(2,npts):
+    vecdirectioni=trajLine(vecTraj[0],vecTraj[1],vecTraj[2],
+                          dftraj.x.iloc[0],dftraj.y.iloc[0],dftraj.z.iloc[0],i-1)
+    vecdirectionT=trajLine(vecTraj[0],vecTraj[1],vecTraj[2],
+                          dftraj.x.iloc[0],dftraj.y.iloc[0],dftraj.z.iloc[0],i)
+    vecDirection=vecdirectionT-vecdirectioni
+    xvec=dftraj.x.iloc[i]-vecdirectioni[0]
+    yvec=dftraj.y.iloc[i]-vecdirectioni[1]
+    zvec=dftraj.z.iloc[i]-vecdirectioni[2]
+    vec=np.array([xvec,yvec,zvec])
+
+    numerator=np.dot(vecDirection,vec)
+    denominator=np.linalg.norm(vecDirection)*np.linalg.norm(vec)
+    ang=np.arccos(numerator/denominator)
+    angDistro.append(ang)
+
+# %%
+vecTraj[0]
+
+# %%
+dfAngDistro=pd.DataFrame(angDistro, columns=['angle'])
+
+# %%
+fig = px.line(dfAngDistro, y='angle', markers=True)#, log_y=True)
+fig.update_layout(title_text='Angle Distribution for cell 116 Cap ', 
+                  title_x=0.5,font=dict(size=15))
+fig.show()
+
+# %%
+
+# %%
+
+# %%
+nt=len(curvasFlagelaresZenodo[20][1])
+traj=[]
+for i in range(nt):
+    x=curvasFlagelaresZenodo[20][1][i].x.iloc[0]
+    y=curvasFlagelaresZenodo[20][1][i].y.iloc[0]
+    z=curvasFlagelaresZenodo[20][1][i].z.iloc[0]
+    traj.append([x,y,z])
+
+# %%
+dftrajNoCap_210702_exp21=pd.DataFrame(traj, columns=['x','y','z'])
+
+# %%
+# celula1=20
+# tiempo1=96
+fig=go.Figure()
+fig.update_layout(
+    autosize=False,
+    width=1250,
+    height=1000,
+    scene_aspectmode='cube'
+    # margin=dict(l=10, r=10, t=10, b=10, pad=10)
+)
+fig.add_trace(go.Scatter3d(x=dftrajNoCap_210702_exp21.x, y=dftrajNoCap_210702_exp21.y, 
+                           z=dftrajNoCap_210702_exp21.z, mode='lines+markers',marker=dict(color='red', size=5), 
+                           name=' Trajectory '))
+fig.add_trace(
+    go.Scatter3d(x=[dftrajNoCap_210702_exp21.x.iloc[0]],
+                 y=[dftrajNoCap_210702_exp21.y.iloc[0]],
+                 z=[dftrajNoCap_210702_exp21.z.iloc[0]],
+                 mode='markers',marker=dict(color='black'))
+)
+ejeshomogeneos=homogenizarRangos(dftrajNoCap_210702_exp21,dftrajNoCap_210702_exp21)
+fig.update_layout(
+    scene=dict(
+        xaxis=dict(range=[ejeshomogeneos[0], ejeshomogeneos[1]], title='X'),  # Set X-axis range and title
+        yaxis=dict(range=[ejeshomogeneos[2], ejeshomogeneos[3]], title='Y'),   # Set Y-axis range and title
+        zaxis=dict(range=[ejeshomogeneos[4], ejeshomogeneos[5]], title='Z'),   # Set Z-axis range and title
+    ),
+    title='Head trajectory NoCap',#curvasFlagelaresZenodo[celula1][0],
+)
+fig.show()
+
+# %%
+dist3D(dftrajNoCap_210702_exp21.x.iloc[0],dftrajNoCap_210702_exp21.y.iloc[0],dftrajNoCap_210702_exp21.z.iloc[0],
+       dftrajNoCap_210702_exp21.x.iloc[-1],dftrajNoCap_210702_exp21.y.iloc[-1],dftrajNoCap_210702_exp21.z.iloc[-1])
 
 # %%
 dist3D(dftraj.x.iloc[0],dftraj.y.iloc[0],dftraj.z.iloc[0],
        dftraj.x.iloc[-1],dftraj.y.iloc[-1],dftraj.z.iloc[-1])
+
+# %%
+dftrajNoCap_210702_exp21.x.iloc[-1],dftrajNoCap_210702_exp21.x.iloc[0]
+
+# %%
+signo=1
+if(dftrajNoCap_210702_exp21.x.iloc[-1]<dftrajNoCap_210702_exp21.x.iloc[0]):
+    signo=-1
+xvecTrajNoCap_210702_exp21=signo*(dftrajNoCap_210702_exp21.x.iloc[-1]-dftrajNoCap_210702_exp21.x.iloc[0])
+yvecTrajNoCap_210702_exp21=signo*(dftrajNoCap_210702_exp21.y.iloc[-1]-dftrajNoCap_210702_exp21.y.iloc[0])
+zvecTrajNoCap_210702_exp21=signo*(dftrajNoCap_210702_exp21.z.iloc[-1]-dftrajNoCap_210702_exp21.z.iloc[0])
+vecTrajNoCap_210702_exp21=np.array([xvecTrajNoCap_210702_exp21,yvecTrajNoCap_210702_exp21,zvecTrajNoCap_210702_exp21])
+npts=dftrajNoCap_210702_exp21.shape[0]
+angDistroNoCap_210702_exp21=[]
+for i in range(2,npts):
+    vecdirectioni=trajLine(vecTrajNoCap_210702_exp21[0],vecTrajNoCap_210702_exp21[1],vecTrajNoCap_210702_exp21[2],
+                          dftrajNoCap_210702_exp21.x.iloc[0],dftrajNoCap_210702_exp21.y.iloc[0],dftrajNoCap_210702_exp21.z.iloc[0],i-1)
+    vecdirectionT=trajLine(vecTrajNoCap_210702_exp21[0],vecTrajNoCap_210702_exp21[1],vecTrajNoCap_210702_exp21[2],
+                          dftrajNoCap_210702_exp21.x.iloc[0],dftrajNoCap_210702_exp21.y.iloc[0],dftrajNoCap_210702_exp21.z.iloc[0],i)
+    vecDirection=vecdirectionT-vecdirectioni
+    xvecNoCap_210702_exp21=dftrajNoCap_210702_exp21.x.iloc[i]-vecdirectioni[0]
+    yvecNoCap_210702_exp21=dftrajNoCap_210702_exp21.y.iloc[i]-vecdirectioni[1]
+    zvecNoCap_210702_exp21=dftrajNoCap_210702_exp21.z.iloc[i]-vecdirectioni[2]
+    vecNoCap_210702_exp21=np.array([xvecNoCap_210702_exp21,yvecNoCap_210702_exp21,zvecNoCap_210702_exp21])
+
+    numerator=np.dot(vecDirection,vecNoCap_210702_exp21)
+    denominator=np.linalg.norm(vecDirection)*np.linalg.norm(vecNoCap_210702_exp21)
+    ang=np.arccos(numerator/denominator)
+    angDistroNoCap_210702_exp21.append(ang)
+
+# %%
+dfAngDistroNoCap_210702_exp21=pd.DataFrame(angDistroNoCap_210702_exp21, columns=['angle'])
+
+# %%
+fig = px.line(dfAngDistroNoCap_210702_exp21, y='angle', markers=True, log_y=True)
+fig.update_layout(title_text='Angle Distribution for cell 20 NoCap ', 
+                  title_x=0.5,font=dict(size=15))
+fig.show()
+
+# %%
+np.pi/2
 
 # %%
 
