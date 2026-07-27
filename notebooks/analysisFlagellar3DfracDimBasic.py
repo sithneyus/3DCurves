@@ -1294,7 +1294,7 @@ flagellar_data = [item[1] for item in curvasFlagelaresZenodo]   # list of list o
 
 # %%
 
-# %% [markdown] jp-MarkdownHeadingCollapsed=true
+# %% [markdown]
 # # Dimensión fractal flagelar 
 #
 # <!--
@@ -1350,7 +1350,8 @@ with open('celsZenodoDimFrac.json', 'w') as f:
 
 # %%
 # the fractal dimensions previously computed are readed from a json file
-with open("celsZenodoDimFrac.json") as f:
+# with open("celsZenodoDimFrac.json") as f:
+with open(homedir+"/Research/3DCurves/data/celsZenodoDimFrac.json") as f:
     lst = json.load(f)
 
 dfCelsZenodoDimFrac=pd.DataFrame(lst,columns=['cel','dimFracDistro'])
